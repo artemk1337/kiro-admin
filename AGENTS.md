@@ -4,13 +4,13 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 
 ## Project Overview
 
-This is a Go CLI tool called `kiro2cc` that manages Kiro authentication tokens and provides Anthropic and OpenAI-compatible API proxy endpoints. The tool acts as a bridge between Anthropic/OpenAI-style requests and AWS CodeWhisperer, translating requests and responses between the formats.
+This is a Go CLI tool called `kiro-admin` that manages Kiro authentication tokens and provides Anthropic and OpenAI-compatible API proxy endpoints. The tool acts as a bridge between Anthropic/OpenAI-style requests and AWS CodeWhisperer, translating requests and responses between the formats.
 
 ## Build and Development Commands
 
 ```bash
 # Build the application
-go build -o kiro2cc main.go
+go build -o kiro-admin main.go
 
 # Run tests
 go test ./...
@@ -19,15 +19,15 @@ go test ./...
 go test ./parser -v
 
 # Run the application
-./kiro2cc [command]
+./kiro-admin [command]
 ```
 
 ## Application Commands
 
-- `./kiro2cc read` - Read and display token information
-- `./kiro2cc refresh` - Refresh the access token using refresh token
-- `./kiro2cc export` - Export environment variables for other tools
-- `./kiro2cc server [port]` - Start HTTP proxy server (default port 8080)
+- `./kiro-admin read` - Read and display token information
+- `./kiro-admin refresh` - Refresh the access token using refresh token
+- `./kiro-admin export` - Export environment variables for other tools
+- `./kiro-admin server [port]` - Start HTTP proxy server (default port 8080)
 
 ## Architecture
 

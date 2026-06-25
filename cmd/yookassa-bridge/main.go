@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/bestk/kiro2cc/internal/yookassabridge"
+	"github.com/artemk1337/kiro-admin/internal/yookassabridge"
 )
 
 func main() {

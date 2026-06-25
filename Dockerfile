@@ -6,7 +6,7 @@ COPY go.mod ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /out/kiro2cc main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /out/kiro-admin main.go
 
 FROM alpine:3.22
 
@@ -14,12 +14,12 @@ RUN apk add --no-cache ca-certificates \
 	&& mkdir -p /root/.aws/sso \
 	&& ln -s /tokens /root/.aws/sso/cache
 
-ENV KIRO2CC_TOKEN_DIR=/tokens
+ENV KIRO_ADMIN_TOKEN_DIR=/tokens
 WORKDIR /app
 
-COPY --from=builder /out/kiro2cc /usr/local/bin/kiro2cc
+COPY --from=builder /out/kiro-admin /usr/local/bin/kiro-admin
 
 EXPOSE 8080
 
-ENTRYPOINT ["kiro2cc"]
+ENTRYPOINT ["kiro-admin"]
 CMD ["server", "8080"]

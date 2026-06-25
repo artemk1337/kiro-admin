@@ -237,9 +237,9 @@ func TestAdminAuthDeviceFlowReturnsKASJSON(t *testing.T) {
 
 func TestWriteListAndSelectTokenAccounts(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
-	t.Setenv("KIRO2CC_ACCOUNT", "")
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_ACCOUNT", "")
 
 	_, err := writeTokenAccount("work", TokenData{
 		AccessToken:  "access-work",
@@ -379,8 +379,8 @@ func TestOpenAIRequestToAnthropic(t *testing.T) {
 
 func TestHandleOpenAIChatCompletions(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	if _, err := writeTokenAccount("work", TokenData{
 		AccessToken:  "kas-access",
@@ -459,9 +459,9 @@ func codeWhispererTestEvent(payload string) []byte {
 
 func TestSelectTokenAccountWithoutNameUsesFirstAccount(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
-	t.Setenv("KIRO2CC_ACCOUNT", "")
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_ACCOUNT", "")
 
 	if _, err := writeTokenAccount("work", TokenData{AccessToken: "a1", RefreshToken: "r1", ProfileArn: "arn:work"}); err != nil {
 		t.Fatalf("write work: %v", err)
@@ -481,8 +481,8 @@ func TestSelectTokenAccountWithoutNameUsesFirstAccount(t *testing.T) {
 
 func TestSelectTokenAccountByAPIKey(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	_, err := writeTokenAccount("work", TokenData{
 		AccessToken:  "a1",
@@ -505,8 +505,8 @@ func TestSelectTokenAccountByAPIKey(t *testing.T) {
 
 func TestWriteTokenAccountSanitizesName(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	account, err := writeTokenAccount("../bad name", TokenData{
 		AccessToken:  "access",
@@ -530,8 +530,8 @@ func TestWriteTokenAccountSanitizesName(t *testing.T) {
 
 func TestWriteTokenAccountRequiresRefreshToken(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	_, err := writeTokenAccount("kiro-cli", TokenData{
 		AccessToken: "kas-access",
@@ -548,8 +548,8 @@ func TestWriteTokenAccountRequiresRefreshToken(t *testing.T) {
 
 func TestWriteTokenAccountAllowsMissingProfileArn(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	_, err := writeTokenAccount("builder-id", TokenData{
 		AccessToken:  "access",
@@ -580,8 +580,8 @@ func TestWriteTokenAccountAllowsMissingProfileArn(t *testing.T) {
 
 func TestWriteTokenAccountAppliesDefaultLimits(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	account, err := writeTokenAccount("work", TokenData{
 		AccessToken:  "access",
@@ -601,8 +601,8 @@ func TestWriteTokenAccountAppliesDefaultLimits(t *testing.T) {
 
 func TestWriteTokenAccountAppliesDefaultGroup(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	account, err := writeTokenAccount("work", TokenData{
 		AccessToken:  "access",
@@ -619,8 +619,8 @@ func TestWriteTokenAccountAppliesDefaultGroup(t *testing.T) {
 
 func TestSelectBalancedTokenAccountUsesModelAvailability(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	if err := saveAdminSettings(AdminSettings{Groups: []AccountGroup{{Name: defaultAccountGroup, APIKey: "sk-global"}}}); err != nil {
 		t.Fatalf("save settings: %v", err)
@@ -676,8 +676,8 @@ func TestSelectBalancedTokenAccountUsesModelAvailability(t *testing.T) {
 
 func TestSelectBalancedTokenAccountStaysInsideGroup(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	if err := saveAdminSettings(AdminSettings{Groups: []AccountGroup{
 		{Name: "team-a", APIKey: "sk-team-a"},
@@ -722,8 +722,8 @@ func TestSelectBalancedTokenAccountStaysInsideGroup(t *testing.T) {
 
 func TestSelectBalancedTokenAccountSkipsDisabledAndEmptyCredits(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	zero := 0.0
 	credits := 10.0
@@ -773,8 +773,8 @@ func TestSelectBalancedTokenAccountSkipsDisabledAndEmptyCredits(t *testing.T) {
 
 func TestFetchAvailableModelsDisablesBlockedAccount(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	credits := 50.0
 	duration := int64(100)
@@ -823,8 +823,8 @@ func TestFetchAvailableModelsDisablesBlockedAccount(t *testing.T) {
 
 func TestHandleAdminAccountToggleChangesEnabledState(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	if _, err := writeTokenAccount("work", TokenData{
 		AccessToken:  "access",
@@ -859,8 +859,8 @@ func TestHandleAdminAccountToggleChangesEnabledState(t *testing.T) {
 
 func TestHandleAdminAccountsEditPreservesEnabledState(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	if _, err := writeTokenAccount("work", TokenData{
 		AccessToken:  "old-access",
@@ -889,8 +889,8 @@ func TestHandleAdminAccountsEditPreservesEnabledState(t *testing.T) {
 
 func TestHandleAdminAccountsAcceptsBuilderIDTokenWithoutProfileArn(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	body := bytes.NewBufferString(`{
 		"name":"builder",
@@ -971,8 +971,8 @@ func TestTokenAccountInfoReportsLastCheckError(t *testing.T) {
 
 func TestAccountGroupInfosSumCreditsForEnabledAccounts(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	enabledCredits := 10.0
 	disabledCredits := 40.0
@@ -1009,8 +1009,8 @@ func TestAccountGroupInfosSumCreditsForEnabledAccounts(t *testing.T) {
 
 func TestGroupCreditsForRequestSkipsDisabledAccounts(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	disabledCredits := 40.0
 	if _, err := writeTokenAccount("enabled", TokenData{
@@ -1063,8 +1063,8 @@ func TestGroupCreditsForRequestSkipsDisabledAccounts(t *testing.T) {
 
 func TestWriteTokenAccountUpdatesExistingAccount(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	first, err := writeTokenAccount("work", TokenData{
 		AccessToken:  "old-access",
@@ -1102,7 +1102,7 @@ func TestWriteTokenAccountUpdatesExistingAccount(t *testing.T) {
 
 func TestRequestHistoryPersistsLast1000Entries(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
 
 	requestHistory.Lock()
 	requestHistory.entries = nil
@@ -1134,7 +1134,7 @@ func TestRequestHistoryPersistsLast1000Entries(t *testing.T) {
 
 func TestUpdateRequestHistoryCreditsSpent(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
 
 	requestHistory.Lock()
 	requestHistory.entries = nil
@@ -1213,8 +1213,8 @@ func TestShouldRefreshKASToken(t *testing.T) {
 
 func TestRefreshKASTokenPreservesAccountMetadata(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	credits := 49.85
 	lastDuration := int64(123)
@@ -1430,8 +1430,8 @@ func TestRefreshKASTokenFromCommandRequiresRefreshToken(t *testing.T) {
 
 func TestRefreshCreditsForAccountNameSavesCredits(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	const profileArn = "arn:aws:codewhisperer:us-east-1:699475941385:profile/test"
 	if _, err := writeTokenAccount("work", TokenData{
@@ -1485,8 +1485,8 @@ func TestRefreshCreditsForAccountNameSavesCredits(t *testing.T) {
 
 func TestRefreshCreditsWithoutProfileArnSendsEmptyBody(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	if _, err := writeTokenAccount("builder", TokenData{
 		AccessToken:  "kas-access",
@@ -1528,8 +1528,8 @@ func TestRefreshCreditsWithoutProfileArnSendsEmptyBody(t *testing.T) {
 
 func TestHandleAdminAccountCreditsRefreshesCredits(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	if _, err := writeTokenAccount("work", TokenData{
 		AccessToken:  "kas-access",
@@ -1566,8 +1566,8 @@ func TestHandleAdminAccountCreditsRefreshesCredits(t *testing.T) {
 
 func TestHandleAdminAccountCheckStoresBlockedAccountStatus(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	credits := 50.0
 	if _, err := writeTokenAccount("builder", TokenData{
@@ -1616,8 +1616,8 @@ func TestHandleAdminAccountCheckStoresBlockedAccountStatus(t *testing.T) {
 
 func TestHandleAdminAccountCheckDiagnosesGenericInvalidBearer(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	credits := 50.0
 	if _, err := writeTokenAccount("builder", TokenData{
@@ -1670,8 +1670,8 @@ func TestHandleAdminAccountCheckDiagnosesGenericInvalidBearer(t *testing.T) {
 
 func TestHandleNewAPITokenUsage(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	if _, err := writeTokenAccount("work", TokenData{
 		AccessToken:  "kas-access",
@@ -1729,8 +1729,8 @@ func TestHandleNewAPITokenUsage(t *testing.T) {
 
 func TestHandleAdminUsageSkipsDisabledAccounts(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	enabledCredits := 12.0
 	disabledCredits := 50.0
@@ -1776,8 +1776,8 @@ func TestHandleNewAPITokenUsageRequiresAuthorization(t *testing.T) {
 
 func TestOpenAIBillingEndpoints(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	if _, err := writeTokenAccount("work", TokenData{
 		AccessToken:  "kas-access",
@@ -1930,7 +1930,7 @@ func TestHandleModels(t *testing.T) {
 	}
 	hasAuto := false
 	for _, model := range resp.Data {
-		if model.Object != "model" || model.OwnedBy != "kiro2cc" {
+		if model.Object != "model" || model.OwnedBy != "kiro-admin" {
 			t.Fatalf("model = %+v", model)
 		}
 		if model.ID == "auto" {
@@ -1944,8 +1944,8 @@ func TestHandleModels(t *testing.T) {
 
 func TestHandleModelsFetchesAvailableModelsByAPIKey(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	if _, err := writeTokenAccount("work", TokenData{
 		AccessToken:  "kas-access",
@@ -2000,8 +2000,8 @@ func TestHandleModelsFetchesAvailableModelsByAPIKey(t *testing.T) {
 
 func TestHandleAdminHistoryDeleteClearsRequests(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	clearRequestHistory()
 	addRequestHistory(RequestLogEntry{ID: "req", Time: "2026-06-16T10:00:00Z", Status: http.StatusOK})
@@ -2017,8 +2017,8 @@ func TestHandleAdminHistoryDeleteClearsRequests(t *testing.T) {
 
 func TestHandleAdminStatsResetKeepsHistory(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	clearRequestHistory()
 	oldNow := nowFunc
@@ -2044,8 +2044,8 @@ func TestHandleAdminStatsResetKeepsHistory(t *testing.T) {
 
 func TestAdminSettingsEnsureDefaultGroupKey(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	if _, err := ensureAdminSettings(); err != nil {
 		t.Fatalf("ensure settings: %v", err)
@@ -2061,8 +2061,8 @@ func TestAdminSettingsEnsureDefaultGroupKey(t *testing.T) {
 
 func TestAdminSettingsResponseDoesNotExposeGlobalAPIKey(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	settings, err := ensureAdminSettings()
 	if err != nil {
@@ -2079,8 +2079,8 @@ func TestAdminSettingsResponseDoesNotExposeGlobalAPIKey(t *testing.T) {
 
 func TestHandleAdminAccountCheckSavesLastTestDuration(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_TOKEN_FILE", filepath.Join(tokenDir, defaultTokenFileName))
 
 	if _, err := writeTokenAccount("work", TokenData{
 		AccessToken:  "kas-access",
@@ -2129,8 +2129,8 @@ func TestHandleAdminAccountCheckSavesLastTestDuration(t *testing.T) {
 
 func TestAdminAuthMiddlewareRequiresSession(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_ADMIN_PASSWORD", "secret-password")
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_PASSWORD", "secret-password")
 
 	called := false
 	handler := adminAuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
@@ -2150,8 +2150,8 @@ func TestAdminAuthMiddlewareRequiresSession(t *testing.T) {
 
 func TestAdminLoginSetsSessionCookie(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_ADMIN_PASSWORD", "secret-password")
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_PASSWORD", "secret-password")
 
 	rr := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/admin/login", strings.NewReader("password=secret-password"))
@@ -2168,8 +2168,8 @@ func TestAdminLoginSetsSessionCookie(t *testing.T) {
 
 func TestHandleAdminPasswordResetReturnsToEnvPassword(t *testing.T) {
 	tokenDir := t.TempDir()
-	t.Setenv("KIRO2CC_TOKEN_DIR", tokenDir)
-	t.Setenv("KIRO2CC_ADMIN_PASSWORD", "env-password")
+	t.Setenv("KIRO_ADMIN_TOKEN_DIR", tokenDir)
+	t.Setenv("KIRO_ADMIN_PASSWORD", "env-password")
 
 	hash, err := hashAdminPassword("custom-password")
 	if err != nil {

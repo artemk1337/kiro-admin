@@ -23,7 +23,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bestk/kiro2cc/parser"
+	"github.com/artemk1337/kiro-admin/parser"
 )
 
 // TokenData 表示token文件的结构
@@ -218,7 +218,7 @@ const (
 	maxRequestHistory         = 1000
 	historyFileName           = "request-history.json"
 	settingsFileName          = "admin-settings.json"
-	adminSessionCookie        = "kiro2cc_admin_session"
+	adminSessionCookie        = "kiro-admin_admin_session"
 	adminSessionTTL           = 24 * time.Hour
 	outboundHTTPTimeout       = 5 * time.Minute
 	tokenRefreshInterval      = time.Minute
@@ -784,11 +784,11 @@ func profileArnOrDefault(profileArn string) string {
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("用法:")
-		fmt.Println("  kiro2cc read    - 读取并显示token")
-		fmt.Println("  kiro2cc export  - 导出环境变量")
-		fmt.Println("  kiro2cc claude  - 跳过 claude 地区限制")
-		fmt.Println("  kiro2cc server [port] - 启动Anthropic API代理服务器")
-		fmt.Println("  author https://github.com/bestK/kiro2cc")
+		fmt.Println("  kiro-admin read    - 读取并显示token")
+		fmt.Println("  kiro-admin export  - 导出环境变量")
+		fmt.Println("  kiro-admin claude  - 跳过 claude 地区限制")
+		fmt.Println("  kiro-admin server [port] - 启动Anthropic API代理服务器")
+		fmt.Println("  author https://github.com/artemk1337/kiro-admin")
 		os.Exit(1)
 	}
 
@@ -826,16 +826,16 @@ func getHomeDir() string {
 
 // getTokenDir 获取token目录。Docker中通常设置为 /tokens。
 func getTokenDir() string {
-	if dir := strings.TrimSpace(os.Getenv("KIRO2CC_TOKEN_DIR")); dir != "" {
+	if dir := strings.TrimSpace(os.Getenv("KIRO_ADMIN_TOKEN_DIR")); dir != "" {
 		return dir
 	}
 
-	return filepath.Join(getHomeDir(), ".kiro2cc", "tokens")
+	return filepath.Join(getHomeDir(), ".kiro-admin", "tokens")
 }
 
 // getTokenFilePath 获取跨平台的默认token文件路径
 func getTokenFilePath() string {
-	if path := strings.TrimSpace(os.Getenv("KIRO2CC_TOKEN_FILE")); path != "" {
+	if path := strings.TrimSpace(os.Getenv("KIRO_ADMIN_TOKEN_FILE")); path != "" {
 		return path
 	}
 
@@ -1385,7 +1385,7 @@ func setClaude() {
 	}
 
 	jsonData["hasCompletedOnboarding"] = true
-	jsonData["kiro2cc"] = true
+	jsonData["kiro-admin"] = true
 
 	newJson, err := json.MarshalIndent(jsonData, "", "  ")
 
@@ -1464,7 +1464,7 @@ func writeAdminAuthRequired(w http.ResponseWriter, r *http.Request, status int, 
 
 func adminPasswordConfigured() bool {
 	settings := loadAdminSettings()
-	return strings.TrimSpace(os.Getenv("KIRO2CC_ADMIN_PASSWORD")) != "" || strings.TrimSpace(settings.AdminPasswordHash) != ""
+	return strings.TrimSpace(os.Getenv("KIRO_ADMIN_PASSWORD")) != "" || strings.TrimSpace(settings.AdminPasswordHash) != ""
 }
 
 func verifyAdminPassword(password string) bool {
@@ -1475,7 +1475,7 @@ func verifyAdminPassword(password string) bool {
 	if settings.AdminPasswordHash != "" {
 		return verifyPasswordHash(settings.AdminPasswordHash, password)
 	}
-	envPassword := os.Getenv("KIRO2CC_ADMIN_PASSWORD")
+	envPassword := os.Getenv("KIRO_ADMIN_PASSWORD")
 	return subtle.ConstantTimeCompare([]byte(password), []byte(envPassword)) == 1
 }
 
@@ -1484,7 +1484,7 @@ func currentAdminPasswordFingerprint() string {
 	if settings.AdminPasswordHash != "" {
 		return settings.AdminPasswordHash
 	}
-	return os.Getenv("KIRO2CC_ADMIN_PASSWORD")
+	return os.Getenv("KIRO_ADMIN_PASSWORD")
 }
 
 func makeAdminSession(passwordFingerprint string, now time.Time) string {
@@ -1579,7 +1579,7 @@ func adminSettingsResponse(settings AdminSettings) AdminSettingsResponse {
 		Groups:          accountGroupInfos(settings),
 		StatsResetAt:    settings.StatsResetAt,
 		HasPassword:     adminPasswordConfigured(),
-		UsesEnvPassword: settings.AdminPasswordHash == "" && strings.TrimSpace(os.Getenv("KIRO2CC_ADMIN_PASSWORD")) != "",
+		UsesEnvPassword: settings.AdminPasswordHash == "" && strings.TrimSpace(os.Getenv("KIRO_ADMIN_PASSWORD")) != "",
 	}
 }
 
@@ -1670,8 +1670,8 @@ func handleAdminPasswordReset(w http.ResponseWriter, r *http.Request) {
 		writeJSONError(w, http.StatusUnauthorized, "current password is invalid")
 		return
 	}
-	if strings.TrimSpace(os.Getenv("KIRO2CC_ADMIN_PASSWORD")) == "" {
-		writeJSONError(w, http.StatusBadRequest, "KIRO2CC_ADMIN_PASSWORD is not configured")
+	if strings.TrimSpace(os.Getenv("KIRO_ADMIN_PASSWORD")) == "" {
+		writeJSONError(w, http.StatusBadRequest, "KIRO_ADMIN_PASSWORD is not configured")
 		return
 	}
 	settings := loadAdminSettings()
@@ -2070,7 +2070,7 @@ func writeOpenAIError(w http.ResponseWriter, status int, message string) {
 	writeJSON(w, status, map[string]any{
 		"error": map[string]any{
 			"message": message,
-			"type":    "kiro2cc_error",
+			"type":    "kiro-admin_error",
 		},
 	})
 }
@@ -2152,7 +2152,7 @@ func writeModelsResponse(w http.ResponseWriter, models []CodeWhispererModel) {
 			"id":       model.ModelID,
 			"object":   "model",
 			"created":  0,
-			"owned_by": "kiro2cc",
+			"owned_by": "kiro-admin",
 		}
 		if model.ModelName != "" {
 			item["name"] = model.ModelName
@@ -4345,7 +4345,7 @@ const adminHTML = `<!doctype html>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Vibecode API</title>
   <script>
-    (()=>{try{const t=localStorage.getItem('kiro2cc.theme')||'light'; document.documentElement.dataset.theme=t}catch(_){}})();
+    (()=>{try{const t=localStorage.getItem('kiro-admin.theme')||'light'; document.documentElement.dataset.theme=t}catch(_){}})();
   </script>
   <style>
     :root { --bg:#f5f7f8; --panel:#fff; --text:#172026; --muted:#63717b; --line:#d9e0e4; --accent:#1d7f64; --danger:#b44747; --warn:#9b6a17; --code:#eef2f3; --code-text:#263139; }
@@ -4595,7 +4595,7 @@ const adminHTML = `<!doctype html>
         </form>
         <form id="passwordResetForm" style="margin-top:12px">
           <label>Текущий пароль<input name="currentPassword" type="password" autocomplete="current-password" required></label>
-          <button class="danger" type="submit">Сбросить к паролю из KIRO2CC_ADMIN_PASSWORD</button>
+          <button class="danger" type="submit">Сбросить к паролю из KIRO_ADMIN_PASSWORD</button>
         </form>
       </section>
     </div>
@@ -4613,7 +4613,7 @@ const adminHTML = `<!doctype html>
 <script>
 const T={ru:{refresh:'Обновить',dataRefreshOneSecond:'Автообновление: 1 сек',dataRefreshTenSeconds:'Автообновление: 10 сек',dataRefreshOneMinute:'Автообновление: 1 мин',themeLight:'Светлая',themeDark:'Темная',accounts:'Аккаунты',credits:'Credits',requests:'Запросы',settings:'Настройки',creditsRefreshMode:'Обновление credits',refreshAfterRequest:'После каждого запроса',refreshOneMinute:'Раз в 1 минуту',refreshTenMinutes:'Раз в 10 минут',refreshNever:'Никогда',refreshCredits:'Обновить credits',refreshToken:'Обновить токен',sortByName:'По названию',sortByCredits:'По credits',sortByLatency:'По задержке',status:'Статус',name:'Имя',tokenUpdatedAt:'Дата обнов. токена',actions:'Действия',history:'История запросов',time:'Время',account:'Аккаунт',model:'Модель',models:'Модели',inputOutput:'Input / Output',creditsSpent:'Credits потрачено',error:'Ошибка',add:'Добавить',edit:'Изменить',addAccount:'Добавить аккаунт',editAccount:'Изменить аккаунт',close:'Закрыть',latency:'Задержка',saveToken:'Добавить KAS token',updateToken:'Обновить KAS token',kasJson:'KAS JSON из CLI',proxyKey:'Proxy key sk-*',creditsManual:'Credits осталось (если знаешь)',save:'Сохранить',howTo:'Как получить валидный KAS token',check:'Тест',delete:'Удалить',ready:'готов',done:'Готово'},en:{refresh:'Refresh',dataRefreshOneSecond:'Auto-refresh: 1 sec',dataRefreshTenSeconds:'Auto-refresh: 10 sec',dataRefreshOneMinute:'Auto-refresh: 1 min',themeLight:'Light',themeDark:'Dark',accounts:'Accounts',credits:'Credits',requests:'Requests',settings:'Settings',creditsRefreshMode:'Credits refresh',refreshAfterRequest:'After each request',refreshOneMinute:'Every 1 minute',refreshTenMinutes:'Every 10 minutes',refreshNever:'Never',refreshCredits:'Refresh credits',refreshToken:'Refresh token',sortByName:'By name',sortByCredits:'By credits',sortByLatency:'By latency',status:'Status',name:'Name',tokenUpdatedAt:'Token update date',actions:'Actions',history:'Request history',time:'Time',account:'Account',model:'Model',models:'Models',inputOutput:'Input / Output',creditsSpent:'Credits spent',error:'Error',add:'Add',edit:'Edit',addAccount:'Add account',editAccount:'Edit account',close:'Close',latency:'Latency',saveToken:'Add KAS token',updateToken:'Update KAS token',kasJson:'KAS JSON from CLI',proxyKey:'Proxy key sk-*',creditsManual:'Credits remaining (optional)',save:'Save',howTo:'How to get valid KAS token',check:'Test',delete:'Delete',ready:'ready',done:'Ready'},zh:{refresh:'刷新',dataRefreshOneSecond:'自动刷新：1 秒',dataRefreshTenSeconds:'自动刷新：10 秒',dataRefreshOneMinute:'自动刷新：1 分钟',themeLight:'浅色',themeDark:'深色',accounts:'账户',credits:'点数',requests:'请求',settings:'设置',creditsRefreshMode:'点数刷新',refreshAfterRequest:'每次请求后',refreshOneMinute:'每 1 分钟',refreshTenMinutes:'每 10 分钟',refreshNever:'从不',refreshCredits:'刷新点数',refreshToken:'刷新令牌',sortByName:'按名称',sortByCredits:'按点数',sortByLatency:'按延迟',status:'状态',name:'名称',tokenUpdatedAt:'令牌更新日期',actions:'操作',history:'请求',time:'时间',account:'账户',model:'模型',models:'模型',inputOutput:'输入 / 输出',creditsSpent:'消耗点数',error:'错误',add:'添加',edit:'编辑',addAccount:'添加账户',editAccount:'编辑账户',close:'关闭',latency:'延迟',saveToken:'添加 KAS token',updateToken:'更新 KAS token',kasJson:'CLI 的 KAS JSON',proxyKey:'代理密钥 sk-*',creditsManual:'剩余点数（可选）',save:'保存',howTo:'如何获取有效 KAS token',check:'测试',delete:'删除',ready:'就绪',done:'完成'}};
 const help={macos:'<h3>macOS</h3><pre>"/Applications/Kiro CLI.app/Contents/MacOS/kiro-cli" login --license free --use-device-flow\nsqlite3 "$HOME/Library/Application Support/kiro-cli/data.sqlite3" "select value from auth_kv where key=\'kirocli:social:token\';" | jq .</pre>',linux:'<h3>Linux</h3><pre>kiro-cli login --license free --use-device-flow\nsqlite3 "$HOME/.config/kiro-cli/data.sqlite3" "select value from auth_kv where key=\'kirocli:social:token\';" | jq .</pre>',windows:'<h3>Windows PowerShell</h3><pre>kiro-cli.exe login --license free --use-device-flow\nsqlite3 "$env:APPDATA\\kiro-cli\\data.sqlite3" "select value from auth_kv where key=\'kirocli:social:token\';" | jq .</pre>'};
-let lang=localStorage.getItem('kiro2cc.lang')||'ru'; let theme=localStorage.getItem('kiro2cc.theme')||'light'; let dataRefreshMode=localStorage.getItem('kiro2cc.dataRefreshMode')||'ten_seconds'; let historyRange=localStorage.getItem('kiro2cc.historyRange')||'all'; let historyFrom=localStorage.getItem('kiro2cc.historyFrom')||''; let historyTo=localStorage.getItem('kiro2cc.historyTo')||''; let accountSort=localStorage.getItem('kiro2cc.accountSort')||'name'; let accountSortDir=localStorage.getItem('kiro2cc.accountSortDir')||'asc'; let accountGroupFilter=localStorage.getItem('kiro2cc.accountGroupFilter')||'all'; let osTab='macos'; let settings={groups:[]}; let dataTimer=null; let authPollTimer=null;
+let lang=localStorage.getItem('kiro-admin.lang')||'ru'; let theme=localStorage.getItem('kiro-admin.theme')||'light'; let dataRefreshMode=localStorage.getItem('kiro-admin.dataRefreshMode')||'ten_seconds'; let historyRange=localStorage.getItem('kiro-admin.historyRange')||'all'; let historyFrom=localStorage.getItem('kiro-admin.historyFrom')||''; let historyTo=localStorage.getItem('kiro-admin.historyTo')||''; let accountSort=localStorage.getItem('kiro-admin.accountSort')||'name'; let accountSortDir=localStorage.getItem('kiro-admin.accountSortDir')||'asc'; let accountGroupFilter=localStorage.getItem('kiro-admin.accountGroupFilter')||'all'; let osTab='macos'; let settings={groups:[]}; let dataTimer=null; let authPollTimer=null;
 const msg=document.getElementById('message'), accountsBody=document.getElementById('accountsBody'), groupsBody=document.getElementById('groupsBody'), historyBody=document.getElementById('historyBody'), accountStatsBody=document.getElementById('accountStatsBody');
 function tr(k){return (T[lang]&&T[lang][k])||T.ru[k]||k} function esc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]))}
 function setMessage(text,failed){msg.textContent=text; msg.style.color=failed?'var(--danger)':'var(--muted)'}
@@ -4658,9 +4658,9 @@ async function checkAccount(name){const cell=document.getElementById('latency-'+
 async function refreshAccountToken(name){try{setMessage('refreshing token...'); const a=await api('/admin/api/accounts/'+encodeURIComponent(name)+'/token',{method:'POST'}); if(a.tokenRefreshError){setMessage(a.tokenRefreshError,true); return} await loadAccounts(); setMessage(tr('done'))}catch(e){setMessage(e.message,true)}}
 async function refreshAccountCredits(name){const cell=document.getElementById('credits-'+name); try{if(cell) cell.textContent='...'; const a=await api('/admin/api/accounts/'+encodeURIComponent(name)+'/credits',{method:'POST'}); if(a.creditsRefreshError){if(cell) cell.textContent=a.creditsRemaining??'FAIL'; setMessage(a.creditsRefreshError,true); return} if(cell) cell.textContent=a.creditsRemaining??'?'; await loadAccounts(); setMessage(tr('done'))}catch(e){if(cell) cell.textContent='FAIL'; setMessage(e.message,true)}}
 async function rotateGroupKey(name){if(!confirm('Создать новый sk-ключ для группы '+name+'?'))return; await api('/admin/api/groups/'+encodeURIComponent(name)+'/key',{method:'POST'}); await loadAll(); setMessage('Ключ группы обновлен')}
-async function deleteGroup(name){if(!confirm('Удалить группу '+name+'?'))return; await api('/admin/api/groups/'+encodeURIComponent(name),{method:'DELETE'}); if(accountGroupFilter===name){accountGroupFilter='all'; localStorage.setItem('kiro2cc.accountGroupFilter',accountGroupFilter)} await loadAll(); setMessage('Группа удалена')}
+async function deleteGroup(name){if(!confirm('Удалить группу '+name+'?'))return; await api('/admin/api/groups/'+encodeURIComponent(name),{method:'DELETE'}); if(accountGroupFilter===name){accountGroupFilter='all'; localStorage.setItem('kiro-admin.accountGroupFilter',accountGroupFilter)} await loadAll(); setMessage('Группа удалена')}
 async function changePassword(e){e.preventDefault(); const form=Object.fromEntries(new FormData(e.currentTarget).entries()); try{settings=await api('/admin/api/password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(form)}); e.currentTarget.reset(); setMessage('Пароль обновлен')}catch(err){setMessage(err.message,true)}}
-async function resetPassword(e){e.preventDefault(); if(!confirm('Сбросить пароль панели к значению из KIRO2CC_ADMIN_PASSWORD?')) return; const form=Object.fromEntries(new FormData(e.currentTarget).entries()); try{settings=await api('/admin/api/password/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(form)}); e.currentTarget.reset(); setMessage('Пароль сброшен')}catch(err){setMessage(err.message,true)}}
+async function resetPassword(e){e.preventDefault(); if(!confirm('Сбросить пароль панели к значению из KIRO_ADMIN_PASSWORD?')) return; const form=Object.fromEntries(new FormData(e.currentTarget).entries()); try{settings=await api('/admin/api/password/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(form)}); e.currentTarget.reset(); setMessage('Пароль сброшен')}catch(err){setMessage(err.message,true)}}
 function scheduleDataRefresh(){if(dataTimer) clearInterval(dataTimer); const ms=dataRefreshMode==='one_second'?1000:dataRefreshMode==='one_minute'?60000:10000; dataTimer=setInterval(()=>loadDynamicData().catch(e=>setMessage(e.message,true)),ms)}
 async function deleteAccount(name){if(!confirm('Delete '+name+'?'))return; await api('/admin/api/accounts/'+encodeURIComponent(name),{method:'DELETE'}); await loadAll()}
 async function toggleAccount(name){try{const a=await api('/admin/api/accounts/'+encodeURIComponent(name)+'/toggle',{method:'POST'}); await loadAccounts(); setMessage((a.enabled?'Аккаунт включен: ':'Аккаунт выключен: ')+name)}catch(e){setMessage(e.message,true)}}
@@ -4670,16 +4670,16 @@ function clearAuthPolling(){if(authPollTimer){clearInterval(authPollTimer); auth
 async function startAdminAuthorization(){clearAuthPolling(); const box=document.getElementById('authBox'), status=document.getElementById('authStatus'), link=document.getElementById('authLink'); try{box.classList.remove('hide'); status.textContent='Запускаю авторизацию...'; link.innerHTML=''; const started=await api('/admin/api/auth/start',{method:'POST'}); status.textContent='Открой ссылку и подтверди вход. Код: '+started.userCode; const href=started.verificationUriComplete||started.verificationUri; link.innerHTML='<a href="'+esc(href)+'" target="_blank" rel="noopener">Открыть авторизацию</a>'; if(href) window.open(href,'_blank','noopener'); const poll=async()=>{try{const r=await api('/admin/api/auth/'+encodeURIComponent(started.id)); if(r.status==='complete'&&r.kasJson){clearAuthPolling(); document.getElementById('accountForm').elements.kasJson.value=JSON.stringify(r.kasJson,null,2); status.textContent='Авторизация завершена, KAS JSON добавлен в форму'; setMessage('Авторизация завершена'); return} status.textContent='Ожидаю подтверждение входа. Код: '+started.userCode}catch(e){clearAuthPolling(); status.textContent=e.message; setMessage(e.message,true)}}; authPollTimer=setInterval(poll,Math.max(2,Number(started.interval||5))*1000); await poll()}catch(e){box.classList.remove('hide'); status.textContent=e.message; setMessage(e.message,true)}}
 document.getElementById('accountForm').addEventListener('submit',async e=>{e.preventDefault(); const form=Object.fromEntries(new FormData(e.currentTarget).entries()); try{const kas=JSON.parse(form.kasJson); const body={name:form.name,accessToken:kas.access_token||kas.accessToken||'',refreshToken:kas.refresh_token||kas.refreshToken||'',profileArn:kas.profile_arn||kas.profileArn||'',expiresAt:kas.expires_at||kas.expiresAt||'',region:kas.region||'',startUrl:kas.start_url||kas.startUrl||'',oauthFlow:kas.oauth_flow||kas.oauthFlow||'',scopes:Array.isArray(kas.scopes)?kas.scopes:[],clientId:kas.client_id||kas.clientId||'',clientSecret:kas.client_secret||kas.clientSecret||'',clientSecretExpiresAt:kas.client_secret_expires_at||kas.clientSecretExpiresAt||'',apiKey:form.apiKey||'',group:form.group||'default',rps:Number(form.rps||2),concurrency:Number(form.concurrency||4)}; if(form.creditsRemaining!=='') body.creditsRemaining=Number(form.creditsRemaining); if(!body.accessToken||!body.refreshToken) throw new Error('KAS JSON must include access_token and refresh_token'); await api('/admin/api/accounts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); closeAccountModal(); e.currentTarget.reset(); await loadAll()}catch(err){setMessage(err.message,true)}});
 document.getElementById('groupForm').addEventListener('submit',async e=>{e.preventDefault(); const form=Object.fromEntries(new FormData(e.currentTarget).entries()); try{const result=await api('/admin/api/groups',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:form.name})}); if(result.groups){settings.groups=result.groups; renderSettings()} e.currentTarget.reset(); await loadAll(); setMessage('Группа добавлена')}catch(err){setMessage(err.message,true)}});
-document.getElementById('lang').addEventListener('change',e=>{lang=e.target.value; localStorage.setItem('kiro2cc.lang',lang); applyLang(); loadAll()}); document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); b.classList.add('active'); osTab=b.dataset.os; applyLang()}));
-document.getElementById('theme').addEventListener('change',e=>{theme=e.target.value; localStorage.setItem('kiro2cc.theme',theme); applyTheme()});
-document.getElementById('dataRefreshMode').addEventListener('change',e=>{dataRefreshMode=e.target.value; localStorage.setItem('kiro2cc.dataRefreshMode',dataRefreshMode); scheduleDataRefresh()});
+document.getElementById('lang').addEventListener('change',e=>{lang=e.target.value; localStorage.setItem('kiro-admin.lang',lang); applyLang(); loadAll()}); document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); b.classList.add('active'); osTab=b.dataset.os; applyLang()}));
+document.getElementById('theme').addEventListener('change',e=>{theme=e.target.value; localStorage.setItem('kiro-admin.theme',theme); applyTheme()});
+document.getElementById('dataRefreshMode').addEventListener('change',e=>{dataRefreshMode=e.target.value; localStorage.setItem('kiro-admin.dataRefreshMode',dataRefreshMode); scheduleDataRefresh()});
 document.getElementById('timeRangeButton').addEventListener('click',toggleTimeRangeMenu);
 document.getElementById('refreshNow').addEventListener('click',()=>loadAll());
-document.querySelectorAll('#timeRangePicker [data-range]').forEach(b=>b.addEventListener('click',()=>{historyRange=b.dataset.range; historyFrom=''; historyTo=''; localStorage.setItem('kiro2cc.historyRange',historyRange); localStorage.removeItem('kiro2cc.historyFrom'); localStorage.removeItem('kiro2cc.historyTo'); closeTimeRangeMenu(); renderHistoryRange(); loadAll()}));
-document.getElementById('applyHistoryRange').addEventListener('click',()=>{historyFrom=document.getElementById('historyFrom').value; historyTo=document.getElementById('historyTo').value; historyRange=(historyFrom||historyTo)?'custom':historyRange; localStorage.setItem('kiro2cc.historyRange',historyRange); if(historyFrom) localStorage.setItem('kiro2cc.historyFrom',historyFrom); else localStorage.removeItem('kiro2cc.historyFrom'); if(historyTo) localStorage.setItem('kiro2cc.historyTo',historyTo); else localStorage.removeItem('kiro2cc.historyTo'); closeTimeRangeMenu(); renderHistoryRange(); loadAll()});
-document.getElementById('accountSort').addEventListener('change',e=>{accountSort=e.target.value; localStorage.setItem('kiro2cc.accountSort',accountSort); loadAccounts().catch(err=>setMessage(err.message,true))});
-document.getElementById('accountSortDir').addEventListener('click',()=>{accountSortDir=accountSortDir==='asc'?'desc':'asc'; localStorage.setItem('kiro2cc.accountSortDir',accountSortDir); renderSortControls(); loadAccounts().catch(err=>setMessage(err.message,true))});
-document.getElementById('accountGroupFilter').addEventListener('change',e=>{accountGroupFilter=e.target.value; localStorage.setItem('kiro2cc.accountGroupFilter',accountGroupFilter); loadAccounts().catch(err=>setMessage(err.message,true))});
+document.querySelectorAll('#timeRangePicker [data-range]').forEach(b=>b.addEventListener('click',()=>{historyRange=b.dataset.range; historyFrom=''; historyTo=''; localStorage.setItem('kiro-admin.historyRange',historyRange); localStorage.removeItem('kiro-admin.historyFrom'); localStorage.removeItem('kiro-admin.historyTo'); closeTimeRangeMenu(); renderHistoryRange(); loadAll()}));
+document.getElementById('applyHistoryRange').addEventListener('click',()=>{historyFrom=document.getElementById('historyFrom').value; historyTo=document.getElementById('historyTo').value; historyRange=(historyFrom||historyTo)?'custom':historyRange; localStorage.setItem('kiro-admin.historyRange',historyRange); if(historyFrom) localStorage.setItem('kiro-admin.historyFrom',historyFrom); else localStorage.removeItem('kiro-admin.historyFrom'); if(historyTo) localStorage.setItem('kiro-admin.historyTo',historyTo); else localStorage.removeItem('kiro-admin.historyTo'); closeTimeRangeMenu(); renderHistoryRange(); loadAll()});
+document.getElementById('accountSort').addEventListener('change',e=>{accountSort=e.target.value; localStorage.setItem('kiro-admin.accountSort',accountSort); loadAccounts().catch(err=>setMessage(err.message,true))});
+document.getElementById('accountSortDir').addEventListener('click',()=>{accountSortDir=accountSortDir==='asc'?'desc':'asc'; localStorage.setItem('kiro-admin.accountSortDir',accountSortDir); renderSortControls(); loadAccounts().catch(err=>setMessage(err.message,true))});
+document.getElementById('accountGroupFilter').addEventListener('change',e=>{accountGroupFilter=e.target.value; localStorage.setItem('kiro-admin.accountGroupFilter',accountGroupFilter); loadAccounts().catch(err=>setMessage(err.message,true))});
 document.querySelectorAll('.view-tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.view-tab').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.view-panel').forEach(x=>x.classList.add('hide')); b.classList.add('active'); document.getElementById(b.dataset.view+'View').classList.remove('hide')}));
 document.getElementById('passwordForm').addEventListener('submit',changePassword);
 document.getElementById('passwordResetForm').addEventListener('submit',resetPassword);

@@ -1,8 +1,8 @@
-# kiro2cc
+# kiro-admin
 
-`kiro2cc` - Docker-friendly Anthropic-compatible proxy для Kiro/CodeWhisperer.
+`kiro-admin` - Docker-friendly Anthropic-compatible proxy для Kiro/CodeWhisperer.
 
-Актуальный способ авторизации: взять auth JSON Kiro CLI из SQLite, добавить его в админке и использовать локальный proxy key формата `sk-*` в клиентах. В этом JSON есть `refresh_token`, поэтому `kiro2cc` сохраняет его в аккаунте и сам продлевает KAS token без запуска `kiro-cli`.
+Актуальный способ авторизации: взять auth JSON Kiro CLI из SQLite, добавить его в админке и использовать локальный proxy key формата `sk-*` в клиентах. В этом JSON есть `refresh_token`, поэтому `kiro-admin` сохраняет его в аккаунте и сам продлевает KAS token без запуска `kiro-cli`.
 
 ## Возможности
 
@@ -42,7 +42,7 @@ http://localhost:8080/v1/messages
 http://localhost:8080/v1/chat/completions
 ```
 
-Compose хранит аккаунты в Docker volume `kiro2cc-tokens`. Кнопка `Обновить токен` и автообновление используют только `refresh_token`, сохраненный в token-файле аккаунта. SQLite Kiro CLI и `kiro-cli` внутри контейнера не используются.
+Compose хранит аккаунты в Docker volume `kiro-admin-tokens`. Кнопка `Обновить токен` и автообновление используют только `refresh_token`, сохраненный в token-файле аккаунта. SQLite Kiro CLI и `kiro-cli` внутри контейнера не используются.
 
 ## Быстрый старт macOS
 
@@ -232,20 +232,20 @@ Credits (0.15 of 50 covered in plan)
 
 ```bash
 go test ./...
-go build -o kiro2cc main.go
-./kiro2cc server 8080
+go build -o kiro-admin main.go
+./kiro-admin server 8080
 ```
 
 По умолчанию локальные аккаунты хранятся в:
 
 ```text
-~/.kiro2cc/tokens
+~/.kiro-admin/tokens
 ```
 
 Можно переопределить:
 
 ```bash
-export KIRO2CC_TOKEN_DIR=/path/to/tokens
+export KIRO_ADMIN_TOKEN_DIR=/path/to/tokens
 ```
 
 ## Модели
