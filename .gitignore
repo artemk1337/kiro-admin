@@ -1,0 +1,5 @@
+*.exe
+
+*response.raw
+.env
+yookassa-bridge-data.json

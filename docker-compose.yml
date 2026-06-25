@@ -1,0 +1,17 @@
+services:
+  kiro2cc:
+    build:
+      context: .
+    image: kiro2cc:local
+    container_name: kiro2cc
+    environment:
+      KIRO2CC_TOKEN_DIR: /tokens
+      KIRO2CC_ADMIN_PASSWORD: ${KIRO2CC_ADMIN_PASSWORD:-admin}
+    ports:
+      - "18080:8080"
+    volumes:
+      - kiro2cc-tokens:/tokens
+    restart: unless-stopped
+
+volumes:
+  kiro2cc-tokens:

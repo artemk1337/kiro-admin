@@ -1,0 +1,20 @@
+services:
+  yookassa-bridge:
+    build:
+      context: .
+      dockerfile: Dockerfile.yookassa-bridge
+    container_name: yookassa-bridge
+    restart: unless-stopped
+    env_file:
+      - .env.yookassa-bridge
+    volumes:
+      - ./data/yookassa-bridge:/data
+    ports:
+      - "127.0.0.1:8090:8090"
+    networks:
+      - new-api-network
+
+networks:
+  new-api-network:
+    external: true
+    name: new-api_new-api-network

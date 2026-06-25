@@ -1,0 +1,11 @@
+.git
+.github
+.vscode
+.agents
+.codex
+tokens
+*.exe
+*response.raw
+kiro2cc
+Dockerfile
+docker-compose.yml

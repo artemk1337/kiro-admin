@@ -1,0 +1,14 @@
+FROM golang:1.25-alpine AS builder
+
+WORKDIR /src
+COPY go.mod ./
+COPY cmd ./cmd
+COPY internal ./internal
+RUN go build -o /out/yookassa-bridge ./cmd/yookassa-bridge
+
+FROM alpine:3.22
+
+WORKDIR /app
+COPY --from=builder /out/yookassa-bridge /usr/local/bin/yookassa-bridge
+EXPOSE 8090
+CMD ["yookassa-bridge"]
